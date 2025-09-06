@@ -1,0 +1,2 @@
+# Ignore Let's Encrypt data
+data/letsencrypt/

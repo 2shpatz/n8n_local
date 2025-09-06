@@ -1,0 +1,145 @@
+version: '3.8'
+
+volumes:
+  db_storage:
+  n8n_storage:
+  redis_storage:
+
+x-shared: &shared
+  restart: always
+  image: docker.n8n.io/n8nio/n8n
+  environment:
+    - DB_TYPE=postgresdb
+    - DB_POSTGRESDB_HOST=postgres
+    - DB_POSTGRESDB_PORT=5432
+    - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+    - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+    - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+    - EXECUTIONS_MODE=queue
+    - QUEUE_BULL_REDIS_HOST=redis
+    - QUEUE_HEALTH_CHECK_ACTIVE=true
+    - N8N_ENCRYPTION_KEY=${ENCRYPTION_KEY}
+    - N8N_SECURE_COOKIE=false
+    - N8N_EMAIL_MODE=smtp
+    - N8N_SMTP_HOST=hidden
+    - N8N_SMTP_PORT=465
+    - N8N_SMTP_USER=hidden
+    - N8N_SMTP_PASS=hidden
+    - N8N_SMTP_SENDER=hidden
+    - N8N_SMTP_SSL=true
+    - NODEJS_PREFER_IPV4=true
+    - GENERIC_TIMEZONE
+    - N8N_HOST=${DOMAIN_NAME}
+    - N8N_PORT=5678
+    - N8N_PROTOCOL=https
+    - NODE_ENV=production
+      #- N8N_PATH
+    - WEBHOOK_URL=https://${DOMAIN_NAME}
+  links:
+    - postgres
+    - redis
+  volumes:
+    - n8n_storage:/home/node/.n8n
+    - ${DATA_FOLDER}/letsencrypt:/letsencrypt
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+
+services:
+
+  initContainer:
+    image: busybox
+    command: ['sh', '-c', 'chown -R 1000:1000 /home/node/.n8n']
+    volumes:
+      - ${DATA_FOLDER}/.n8n:/home/node/.n8n
+
+  traefik:
+    image: 'traefik'
+    restart: always
+    command:
+      - '--api=true'
+      - '--api.insecure=true'
+      - '--api.dashboard=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.websecure.address=:443'
+      - '--certificatesresolvers.mytlschallenge.acme.tlschallenge=true'
+      - '--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}'
+      - '--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json'
+    ports:
+      - '443:443'
+      - '80:80'
+    volumes:
+      - ${DATA_FOLDER}/letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    volumes:
+      - db_storage:/var/lib/postgresql/data
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:6-alpine
+    restart: always
+    volumes:
+      - redis_storage:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    <<: *shared
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=Host(`${DOMAIN_NAME}`)
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.routers.n8n.entrypoints=websecure
+      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
+      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
+      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
+      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
+      - traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}
+      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.n8n.headers.STSPreload=true
+        #- 'traefik.http.routers.n8n.rule=PathPrefix(`/${SUBFOLDER}{regex:$$|/.*}`)'
+        #- 'traefik.http.middlewares.n8n-stripprefix.stripprefix.prefixes=/${SUBFOLDER}'
+        #- 'traefik.http.routers.n8n.middlewares=n8n-stripprefix'
+
+    ports:
+      - 5678:5678
+    
+    depends_on:
+      initContainer:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    
+          #command: "start --tunnel"
+
+    
+
+  n8n-worker:
+    <<: *shared
+    command: worker
+    depends_on:
+      - n8n        
+
