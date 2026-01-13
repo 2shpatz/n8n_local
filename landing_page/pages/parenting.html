@@ -1,0 +1,207 @@
+{% set title = "תדהר לוי – הורות מכבדת | דף נחיתה" %}
+
+{% extends "layout/base.html" %}
+
+{% block content %}
+
+<section class="hero fade-in">
+    <div>
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span>הורות מכבדת שמחזירה את השקט והביטחון הביתה</span>
+        </div>
+
+        <h1 class="hero-title">
+            דף שילווה אותך בדרך להפוך ל
+            <span class="gradient">הורה מנהיג, רגוע ומחובר</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            תדהר לוי מלווה הורים שרוצים להפסיק לכבות שריפות, להתחיל להבין את הילדים באמת,
+            ולבנות בית שבו יש גבולות ברורים – אבל גם כבוד, הקשבה וחיבור.
+        </p>
+
+        <div class="hero-cta-group">
+            <button class="btn-primary" onclick="scrollToLeadForm()">
+                קבעו שיחת היכרות ללא עלות
+                <span class="bounce-finger">👇</span>
+            </button>
+            <button class="btn-secondary" onclick="scrollToFeatures()">
+                למה הורות מכבדת עובדת
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="questionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF6B6B"/>
+                            <stop offset="50%" style="stop-color:#FFE66D"/>
+                            <stop offset="100%" style="stop-color:#4ECDC4"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="12" cy="12" r="10" fill="url(#questionGradient)"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="17" r="1" fill="white"/>
+                </svg>
+            </button>
+            <a class="btn-secondary" href="https://rie.org/" target="_blank" rel="noopener noreferrer">
+                עוד על השיטה של הורות מכבדת
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                    <defs>
+                        <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea"/>
+                            <stop offset="50%" style="stop-color:#f093fb"/>
+                            <stop offset="100%" style="stop-color:#f5576c"/>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#brainGradient)" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    <path fill="url(#brainGradient)" d="M12 6c-2.21 0-4 1.79-4 4 0 1.1.45 2.1 1.17 2.83L12 15.66l2.83-2.83C15.55 12.1 16 11.1 16 10c0-2.21-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                    <circle cx="12" cy="10" r="1.5" fill="white"/>
+                    <path fill="white" d="M8.5 13.5c.5.5 1.2.8 2 .9M15.5 13.5c-.5.5-1.2.8-2 .9" stroke="white" stroke-width="0.5"/>
+                </svg>
+            </a>
+        </div>
+
+        <p class="hero-note">
+            10 דקות שיכולות לשנות את האווירה בבית – ולהחזיר לכם את הביטחון כהורים.
+        </p>
+    </div>
+
+    <div class="hero-right fade-in">
+        <div class="floating-orb"></div>
+
+        <div class="preview-card">
+            <div class="preview-header">
+                <div class="preview-pills">
+                    <span class="preview-pill"></span>
+                    <span class="preview-pill"></span>
+                    <span class="preview-pill"></span>
+                </div>
+                <span>דוגמה חיה לתהליך</span>
+            </div>
+
+            <div class="preview-body">
+                <div>
+                    <div class="mini-hero-title">הבית יכול להיות רגוע יותר</div>
+                    <div class="mini-hero-subtitle">
+                        הדרכה אישית שתעזור לכם להבין את הילד, להציב גבולות בביטחון,
+                        וליצור מערכת יחסים שמבוססת על כבוד הדדי.
+                    </div>
+                    <div class="mini-hero-cta">
+                        התחילו מסע של הורות מכבדת
+                        <span>→</span>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric-item">
+                        <div class="metric-label">שיפור באווירה בבית</div>
+                        <div class="metric-value">+85%</div>
+                        <div class="metric-tag">לאחר 4–6 מפגשים</div>
+                    </div>
+
+                    <div class="metric-item">
+                        <div class="metric-label">ירידה במאבקי כוח</div>
+                        <div class="metric-value">-60%</div>
+                        <div class="metric-tag">בממוצע אצל משפחות בתהליך</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glow-line"></div>
+        </div>
+    </div>
+</section>
+
+<!-- First image divider - slides in from right -->
+<div class="section-divider">
+    <img src="/assets/img/background/background.jpeg" alt="" class="section-divider-img from-right">
+</div>
+
+<section id="features" class="section fade-in">
+    <h2 class="section-title">מה תקבלו בתהליך</h2>
+    <p class="section-subtitle">
+        תהליך שמחזיר את הסמכות הטבעית שלכם כהורים, ומאפשר לכם לבנות בית רגוע, בטוח ומכבד.
+    </p>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3 class="feature-title">כלים לתקשורת מקרבת</h3>
+            <div class="speech-bubble">
+                <p class="feature-text">
+                    תלמדו איך לדבר כך שהילד יקשיב, ואיך להקשיב כך שהילד ידבר.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🧭</div>
+            <h3 class="feature-title">הצבת גבולות בביטחון</h3>
+            <div class="speech-bubble">
+                <p class="feature-text">
+                    בלי צעקות, בלי איומים, בלי מאבקי כוח – גבולות שמכבדים את הילד ואתכם.
+                </p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">❤️</div>
+            <h3 class="feature-title">חיזוק הקשר המשפחתי</h3>
+            <div class="speech-bubble">
+                <p class="feature-text">
+                    תגלו איך ליצור בית שבו יש שייכות, ביטחון, והקשבה הדדית.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cta" class="cta-strip">
+        <div>
+            <div class="cta-strip-title">רוצים להחזיר את השקט והביטחון להורות שלכם?</div>
+            <div class="cta-strip-text">
+                השאירו פרטים וקבלו שיחת היכרות קצרה שבה נבין יחד מה קורה אצלכם בבית.
+            </div>
+        </div>
+
+        <div class="cta-strip-actions">
+            <button class="btn-primary" onclick="scrollToLeadForm()">אני רוצה הורות מכבדת <span class="bounce-finger">👇</span></button>
+        </div>
+    </div>
+</section>
+
+<!-- Second image divider - slides in from left -->
+<div class="section-divider">
+    <img src="/assets/img/background/background2.jpeg" alt="" class="section-divider-img from-left">
+</div>
+
+<section id="lead-form" class="section fade-in">
+    <h2 class="section-title">השאירו פרטים – ותדהר תחזור אליכם</h2>
+    <p class="section-subtitle">
+        ספרו בקצרה מה קורה אצלכם בבית, ואחזור אליכם עם כיוונים ראשוניים וכלים שתוכלו ליישם כבר היום.
+    </p>
+
+    <form onsubmit="handleFormSubmit(event)" style="margin-top: 1.5rem; max-width: 460px;">
+        <div style="margin-bottom: 0.9rem;">
+            <label for="name">שם מלא</label>
+            <input id="name" name="name" required />
+        </div>
+
+        <div style="margin-bottom: 0.9rem;">
+            <label for="email">אימייל</label>
+            <input id="email" name="email" type="email" required />
+        </div>
+
+        <div style="margin-bottom: 0.9rem;">
+            <label for="project">ספרו בקצרה על האתגר ההורי שלכם</label>
+            <textarea id="project" name="project" rows="3"></textarea>
+        </div>
+
+        <button class="btn-primary" type="submit">
+            שלחו לי הצעה
+        </button>
+
+        <p id="form-message" style="display:none;">
+            תודה! הפרטים התקבלו. תדהר תחזור אליכם בהקדם.
+        </p>
+    </form>
+</section>
+
+{% endblock %}

@@ -60,13 +60,16 @@ services:
       - '--api.dashboard=true'
       - '--providers.docker=true'
       - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
       - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.landing.address=:7001'
       - '--certificatesresolvers.mytlschallenge.acme.tlschallenge=true'
       - '--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}'
       - '--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json'
     ports:
       - '443:443'
       - '80:80'
+      - '7001:7001'
     volumes:
       - ${DATA_FOLDER}/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -143,3 +146,22 @@ services:
     depends_on:
       - n8n        
 
+  landing-page:
+    build:
+      context: ..
+      dockerfile: docker/landing-page/Dockerfile
+    restart: always
+    volumes:
+      - ../landing_page:/app/landing_page
+      - ../docker/landing-page/app.py:/app/app.py
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    command: ["python", "app.py"]
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.landing.rule=Host(`shpindel.tplinkdns.com`)
+      - traefik.http.routers.landing.entrypoints=landing
+      - traefik.http.routers.landing.tls=true
+      - traefik.http.routers.landing.tls.certresolver=mytlschallenge
+      - traefik.http.services.landing.loadbalancer.server.port=8080
