@@ -7,7 +7,7 @@ volumes:
 
 x-shared: &shared
   restart: always
-  image: docker.n8n.io/n8nio/n8n
+  image: n8nio/n8n:latest
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
@@ -52,8 +52,10 @@ services:
       - ${DATA_FOLDER}/.n8n:/home/node/.n8n
 
   traefik:
-    image: 'traefik'
+    image: 'traefik:latest'
     restart: always
+    environment:
+      - DOCKER_API_VERSION=1.45
     command:
       - '--api=true'
       - '--api.insecure=true'
@@ -61,15 +63,24 @@ services:
       - '--providers.docker=true'
       - '--providers.docker.exposedbydefault=false'
       - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.web.http.redirections.entrypoint.permanent=true'
       - '--entrypoints.websecure.address=:443'
+      - '--entrypoints.websecure.http.tls=true'
+      - '--entrypoints.n8n-external.address=:8056'
+      - '--entrypoints.n8n-external.http.tls=true'
       - '--entrypoints.landing.address=:7001'
       - '--certificatesresolvers.mytlschallenge.acme.tlschallenge=true'
       - '--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}'
       - '--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json'
+      - '--log.level=DEBUG'
     ports:
       - '443:443'
       - '80:80'
+      - '8056:8056'
       - '7001:7001'
+      - '8070:8070'
     volumes:
       - ${DATA_FOLDER}/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -111,7 +122,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.n8n.rule=Host(`${DOMAIN_NAME}`)
       - traefik.http.routers.n8n.tls=true
-      - traefik.http.routers.n8n.entrypoints=websecure
+      - traefik.http.routers.n8n.entrypoints=websecure,n8n-external
       - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
       - traefik.http.middlewares.n8n.headers.SSLRedirect=true
       - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
